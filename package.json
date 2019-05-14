@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "doc": "jsdoc ./src -d ./docs"
   },
+  "repository": "github:studionone/aws-sdk-wrapper",
   "author": "Studio None",
   "license": "UNLICENSED",
   "dependencies": {
