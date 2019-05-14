@@ -1,0 +1,14 @@
+{
+  "name": "aws-sdk-wrapper",
+  "version": "1.0.0",
+  "description": "A wrapper for useful parts of the AWS JavaScript SDK",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Studio None",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "aws-sdk": "^2.454.0"
+  }
+}
