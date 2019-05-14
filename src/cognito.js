@@ -3,7 +3,7 @@
 const AWS = require('aws-sdk')
 const { cleanCognitoKeys } = require('./helpers')
 
-const cognito = new AWS.CognitoIdentityServiceProvider({ region: process.env.AWS_REGION })
+const cog = new AWS.CognitoIdentityServiceProvider({ region: process.env.AWS_REGION })
 const errors = require('./errors')
 
 const paramDefaults = {
@@ -13,20 +13,21 @@ const paramDefaults = {
 /**
  * @namespace cognito
  */
+const cognito = {}
 
 /**
  * Get all users from the specified user group
  * @param  {string} group - The name of the group to fetch users from
  * @return {array}        - An array of users with cleaned properties
  */
-const getGroupUsers = (group) => {
+cognito.getGroupUsers = (group) => {
   const params = {
     ...paramDefaults,
     GroupName: group,
   }
 
   return new Promise((resolve, reject) => {
-    cognito.listUsersInGroup(params, (error, data) => {
+    cog.listUsersInGroup(params, (error, data) => {
       if (error) {
         reject(error)
       } else {
@@ -41,14 +42,14 @@ const getGroupUsers = (group) => {
  * @param  {string} id - The id of the user to fetch
  * @return {object}    - The user object with cleaned properties
  */
-const getUser = (id) => {
+cognito.getUser = (id) => {
   const params = {
     ...paramDefaults,
     Filter: `sub = "${id}"`,
   }
 
   return new Promise((resolve, reject) => {
-    cognito.listUsers(params, (error, data) => {
+    cog.listUsers(params, (error, data) => {
       if (error) {
         reject(error)
       } else if (data.Users.length === 0) {
@@ -65,8 +66,8 @@ const getUser = (id) => {
  * @param  {string} id - The ID of the user to look up
  * @return {array}     - An array of group names
  */
-const getUserGroups = id => (
-  getUser(id)
+cognito.getUserGroups = id => (
+  cognito.getUser(id)
     .then((users) => {
       const params = {
         ...paramDefaults,
@@ -74,7 +75,7 @@ const getUserGroups = id => (
       }
 
       return new Promise((resolve, reject) => {
-        cognito.adminListGroupsForUser(params, (error, data) => {
+        cog.adminListGroupsForUser(params, (error, data) => {
           if (error) {
             reject(error)
           } else {
@@ -85,8 +86,4 @@ const getUserGroups = id => (
     })
 )
 
-module.exports = {
-  getGroupUsers,
-  getUser,
-  getUserGroups,
-}
+module.exports = cognito

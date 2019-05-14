@@ -5,12 +5,17 @@ const AWS = require('aws-sdk')
 const db = new AWS.DynamoDB.DocumentClient({ region: process.env.AWS_REGION })
 
 /**
+ * @namespace dynamodb
+ */
+const dynamodb = {}
+
+/**
  * Add a new item to a DynamoDB table
  * @param  {string} table - The name of the table to modify
  * @param  {object} args  - The properties to apply to the new item
  * @return {promise}      - A promise that resolves on completion
  */
-const put = (table, args) => {
+dynamodb.put = (table, args) => {
   let item = {}
   // Remove empty strings from query
   Object.entries(args).forEach(([key, value]) => {
@@ -45,7 +50,7 @@ const put = (table, args) => {
  * @param  {object} args  - The new properties to apply to the item
  * @return {promise}      - A promise that resolves on completion
  */
-const update = (table, field, args) => {
+dynamodb.update = (table, field, args) => {
   let expression = 'set'
   let values = {}
   let names = {}
@@ -105,7 +110,7 @@ const update = (table, field, args) => {
  * @param  {*}      match - The field value to match against
  * @return {promise}      - A promise that resolves on completion
  */
-const query = (table, field, match) => {
+dynamodb.query = (table, field, match) => {
   const params = {
     TableName: table,
     IndexName: `${field}-index`,
@@ -132,7 +137,7 @@ const query = (table, field, match) => {
  * @param  {*}      match - The field value to match against
  * @return {promise}      - A promise that resolves on completion
  */
-const get = (table, index, match) => {
+dynamodb.get = (table, index, match) => {
   const params = {
     TableName: table,
     Key: { [index]: match },
@@ -154,7 +159,7 @@ const get = (table, index, match) => {
  * @param  {string} table - The name of the table to select from
  * @return {promise}      - A promise that resolves on completion
  */
-const scan = (table) => {
+dynamodb.scan = (table) => {
   const params = {
     TableName: table,
   }
@@ -178,7 +183,7 @@ const scan = (table) => {
  *                        - must be supplied in addition to the hash key
  * @return {promise}      - A promise that resolves on completion
  */
-const remove = (table, keys) => {
+dynamodb.remove = (table, keys) => {
   const params = {
     TableName: table,
     Key: keys,
@@ -195,11 +200,4 @@ const remove = (table, keys) => {
   })
 }
 
-module.exports = {
-  put,
-  update,
-  query,
-  get,
-  scan,
-  remove,
-}
+module.exports = dynamodb

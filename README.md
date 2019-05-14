@@ -4,7 +4,7 @@ This project contains wrappers for useful parts of the AWS SDK, which makes them
 
 ## DynamoDB wrapper
 
-The module `database.js` includes wrappers for the `put`, `update`, `query`, `get`, `scan` and `delete` methods of the class `AWS.DynamoDB.DocumentClient`.
+The module `dynamodb.js` includes wrappers for the `put`, `update`, `query`, `get`, `scan` and `delete` methods of the class `AWS.DynamoDB.DocumentClient`.
 
 ## Cognito wrapper
 
