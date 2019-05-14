@@ -4,7 +4,8 @@
   "description": "A wrapper for useful parts of the AWS JavaScript SDK",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "doc": "jsdoc ./src -d ./docs"
   },
   "author": "Studio None",
   "license": "UNLICENSED",
