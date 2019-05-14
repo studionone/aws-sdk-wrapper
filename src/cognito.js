@@ -11,6 +11,10 @@ const paramDefaults = {
 }
 
 /**
+ * @namespace cognito
+ */
+
+/**
  * Get all users from the specified user group
  * @param  {string} group - The name of the group to fetch users from
  * @return {array}        - An array of users with cleaned properties
@@ -57,28 +61,12 @@ const getUser = (id) => {
 }
 
 /**
- * Get the current user's ID from the provided identity object
- * @param  {object} identity - The identity object from the Lambda context
- * @return {string}          - The current user's ID or null if not available
- */
-const getUserId = (identity) => {
-  // Get user ID from Cognito user
-  if (identity.sub) {
-    return identity.sub
-  }
-
-  // Get user ID from identity provider string
-  const match = identity.cognitoIdentityAuthProvider.match(/CognitoSignIn:([a-z0-9-]{36})/)
-  return match ? match[1] : null
-}
-
-/**
  * Get the groups a user belongs to
  * @param  {string} id - The ID of the user to look up
  * @return {array}     - An array of group names
  */
-const getUserGroups = identity => (
-  getUser(getUserId(identity))
+const getUserGroups = id => (
+  getUser(id)
     .then((users) => {
       const params = {
         ...paramDefaults,
@@ -101,5 +89,4 @@ module.exports = {
   getGroupUsers,
   getUser,
   getUserGroups,
-  getUserId,
 }
