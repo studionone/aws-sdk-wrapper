@@ -40,7 +40,7 @@ cognito.getGroupUsers = (group) => {
 /**
  * Get a user from the specified user ID
  * @param  {string} id - The id of the user to fetch
- * @return {object}    - The user object with cleaned properties
+ * @return {promise}   - A promise that resolves to the user object with cleaned properties
  */
 cognito.getUser = (id) => {
   const params = {
@@ -56,6 +56,26 @@ cognito.getUser = (id) => {
         reject(new errors.UserNotFoundError())
       } else {
         resolve(cleanCognitoKeys(data.Users[0]))
+      }
+    })
+  })
+}
+
+/**
+ * Get all users from the user pool
+ * @return {promise}   - A promise that resolves to the user object with cleaned properties
+ */
+cognito.getAllUsers = () => {
+  const params = {
+    ...paramDefaults,
+  }
+
+  return new Promise((resolve, reject) => {
+    cog.listUsers(params, (error, data) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(cleanCognitoKeys(data.Users))
       }
     })
   })
