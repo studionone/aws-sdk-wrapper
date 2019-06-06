@@ -179,8 +179,8 @@ dynamodb.scan = (table) => {
  * Remove an item from a DynamoDB table
  * @param  {string} table - The name of the table to remove from
  * @param  {object} keys  - An object containing key value pairs to match by
- *                        - If a sort key is defined on the table, its value
- *                        - must be supplied in addition to the hash key
+ *                          If a sort key is defined on the table, its value
+ *                          must be supplied in addition to the hash key
  * @return {promise}      - A promise that resolves on completion
  */
 dynamodb.remove = (table, keys) => {
@@ -199,5 +199,25 @@ dynamodb.remove = (table, keys) => {
     })
   })
 }
+
+/**
+ * Perform an arbitrary database operation using the full API options
+ * @param  {string} table  - The name of the table operate on
+ * @param  {string} name   - The name of the operation to perform, eg query, scan etc
+ * @param  {object} params - A params object as per the DocumentClient API
+ *                           The TableName parameter can be omitted
+ * @return {promise}       - A promise that resolves on completion
+ */
+dynamodb.operation = (table, name, params) => (
+  new Promise((resolve, reject) => {
+    db[name]({ TableName: table, ...params }, (error, data) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(data)
+      }
+    })
+  })
+)
 
 module.exports = dynamodb
