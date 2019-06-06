@@ -6,7 +6,7 @@ This project contains wrappers for useful parts of the AWS SDK, which makes them
 
 The `dynamodb.js` module includes wrappers for useful methods of the class `AWS.DynamoDB.DocumentClient`. This allows you to create, read, update, and delete items from a DynamoDB table without having to worry about the complex `ExpressionAttribute` syntax the native API requires.
 
-Note that complex queries involving multiple conditions aren't supported and must be constructed using the native AWS SDK API.
+Note that complex queries involving multiple conditions aren't supported and must be constructed using the native AWS SDK API syntax with `dynamodb.operation()`.
 
 ### Example
 
