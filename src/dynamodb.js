@@ -131,6 +131,58 @@ dynamodb.query = (table, field, match) => {
 }
 
 /**
+ * Select items from a DynamoDB table by matching field and optional range values
+ * @param  {string} table - The name of the table to select from
+ * @param  {string} field - The name of the field to select by
+ * @param  {*}      match - The field value to match against
+ * @param  {string} range - The name of the range field to select by
+ * @param  {*}      start - The range value to select items greater than
+ * @param  {*}      end   - The range value to select items less than
+ * @return {promise}      - A promise that resolves on completion
+ */
+dynamodb.rangeQuery = (table, field, match, range, start, end) => {
+  const params = {
+    TableName: table,
+    IndexName: `${field}-index`,
+    KeyConditions: {
+      [field]: {
+        ComparisonOperator: 'EQ',
+        AttributeValueList: [match],
+      },
+    },
+  }
+
+  if (range) {
+    if (start && end) {
+      params.KeyConditions[range] = {
+        ComparisonOperator: 'BETWEEN',
+        AttributeValueList: [start, end],
+      }
+    } else if (start) {
+      params.KeyConditions[range] = {
+        ComparisonOperator: ['GE'],
+        AttributeValueList: [start],
+      }
+    } else if (end) {
+      params.KeyConditions[range] = {
+        ComparisonOperator: ['LT'],
+        AttributeValueList: [end],
+      }
+    }
+  }
+
+  return new Promise((resolve, reject) => {
+    db.query(params, (error, data) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(data)
+      }
+    })
+  })
+}
+
+/**
  * Select an item from a DynamoDB table by matching index
  * @param  {string} table - The name of the table to select from
  * @param  {index}  index - The name of the index to select by
