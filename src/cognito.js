@@ -118,7 +118,8 @@ cognito.updateUserAttributes = (id, attributes) => {
       const params = {
         ...paramDefaults,
         Username: user.username,
-        UserAttributes: attributes,
+        UserAttributes: Object.entries(attributes)
+          .map(([key, value]) => ({ Name: key, Value: value })),
       }
 
       return new Promise((resolve, reject) => {
