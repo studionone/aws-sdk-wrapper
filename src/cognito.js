@@ -88,10 +88,10 @@ cognito.getAllUsers = () => {
  */
 cognito.getUserGroups = id => (
   cognito.getUser(id)
-    .then((users) => {
+    .then((user) => {
       const params = {
         ...paramDefaults,
-        Username: users.username,
+        Username: user.username,
       }
 
       return new Promise((resolve, reject) => {
@@ -108,28 +108,32 @@ cognito.getUserGroups = id => (
 
 /**
  * Update a user's Cognito attributes
+ * @param  {string} id         - The ID of the user to edit
  * @param  {object} attributes - The attributes to change
  * @return {promise}           - A promisethat resolves on completion
  */
-cognito.updateUserAttributes = (username, attributes) => {
-  const params = {
-    ...paramDefaults,
-    Username: username,
-    UserAttributes: attributes,
-  }
-
-  return new Promise((resolve, reject) => {
-    cog.adminUpdateUserAttributes(
-      params,
-      (error) => {
-        if (error) {
-          reject(error)
-        } else {
-          resolve()
-        }
+cognito.updateUserAttributes = (id, attributes) => {
+  cognito.getUser()
+    .then((user) => {
+      const params = {
+        ...paramDefaults,
+        Username: user.username,
+        UserAttributes: attributes,
       }
-    )
-  })
+
+      return new Promise((resolve, reject) => {
+        cog.adminUpdateUserAttributes(
+          params,
+          (error) => {
+            if (error) {
+              reject(error)
+            } else {
+              resolve()
+            }
+          }
+        )
+      })
+    })
 }
 
 module.exports = cognito
