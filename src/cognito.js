@@ -113,13 +113,19 @@ cognito.getUserGroups = id => (
  * @return {promise}           - A promisethat resolves on completion
  */
 cognito.updateUserAttributes = (id, attributes) => {
-  cognito.getUser()
+  const emptyValues = [null, undefined]
+
+  return cognito.getUser(id)
     .then((user) => {
       const params = {
         ...paramDefaults,
         Username: user.username,
         UserAttributes: Object.entries(attributes)
-          .map(([key, value]) => ({ Name: key, Value: value })),
+          // Map attributes and replace null values with empty strings
+          .map(([key, value]) => ({
+            Name: key,
+            Value: emptyValues.includes(value) ? '' : value,
+          })),
       }
 
       return new Promise((resolve, reject) => {
