@@ -84,7 +84,7 @@ cognito.getAllUsers = () => {
 /**
  * Get the groups a user belongs to
  * @param  {string} id - The ID of the user to look up
- * @return {array}     - An array of group names
+ * @return {promise}   - A promise that resolves to an array of group names
  */
 cognito.getUserGroups = id => (
   cognito.getUser(id)
@@ -105,5 +105,31 @@ cognito.getUserGroups = id => (
       })
     })
 )
+
+/**
+ * Update a user's Cognito attributes
+ * @param  {object} attributes - The attributes to change
+ * @return {promise}           - A promisethat resolves on completion
+ */
+cognito.updateUserAttributes = (username, attributes) => {
+  const params = {
+    ...paramDefaults,
+    Username: username,
+    UserAttributes: attributes,
+  }
+
+  return new Promise((resolve, reject) => {
+    cog.adminUpdateUserAttributes(
+      params,
+      (error) => {
+        if (error) {
+          reject(error)
+        } else {
+          resolve()
+        }
+      }
+    )
+  })
+}
 
 module.exports = cognito
