@@ -39,7 +39,7 @@ dynamodb.query(process.env.TABLE_NAME, 'name', 'Jon')
 
 ## Cognito wrapper
 
-The `cognito.js` module includes a wrapper for the `listUsersInGroup` and `adminListGroupsForUser` methods of the class `AWS.CognitoIdentityServiceProvider`. It also provides a `getUser` function that makes use of the `listUsers` method.
+The `cognito.js` module includes a wrapper for the `adminUpdateUserAttributes`, `listUsersInGroup` and `adminListGroupsForUser` methods of the class `AWS.CognitoIdentityServiceProvider`. It also provides a `getUser` function that makes use of the `listUsers` method.
 
 ## Contents:
 
