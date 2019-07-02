@@ -84,14 +84,14 @@ cognito.getAllUsers = () => {
 /**
  * Get the groups a user belongs to
  * @param  {string} id - The ID of the user to look up
- * @return {array}     - An array of group names
+ * @return {promise}   - A promise that resolves to an array of group names
  */
 cognito.getUserGroups = id => (
   cognito.getUser(id)
-    .then((users) => {
+    .then((user) => {
       const params = {
         ...paramDefaults,
-        Username: users.username,
+        Username: user.username,
       }
 
       return new Promise((resolve, reject) => {
@@ -105,5 +105,42 @@ cognito.getUserGroups = id => (
       })
     })
 )
+
+/**
+ * Update a user's Cognito attributes
+ * @param  {string} id         - The ID of the user to edit
+ * @param  {object} attributes - The attributes to change
+ * @return {promise}           - A promisethat resolves on completion
+ */
+cognito.updateUserAttributes = (id, attributes) => {
+  const emptyValues = [null, undefined]
+
+  return cognito.getUser(id)
+    .then((user) => {
+      const params = {
+        ...paramDefaults,
+        Username: user.username,
+        UserAttributes: Object.entries(attributes)
+          // Map attributes and replace null values with empty strings
+          .map(([key, value]) => ({
+            Name: key,
+            Value: emptyValues.includes(value) ? '' : value,
+          })),
+      }
+
+      return new Promise((resolve, reject) => {
+        cog.adminUpdateUserAttributes(
+          params,
+          (error) => {
+            if (error) {
+              reject(error)
+            } else {
+              resolve()
+            }
+          }
+        )
+      })
+    })
+}
 
 module.exports = cognito
