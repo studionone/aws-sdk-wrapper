@@ -75,7 +75,7 @@ cognito.getAllUsers = () => {
       if (error) {
         reject(error)
       } else {
-        resolve(cleanCognitoKeys(data.Users))
+        resolve(data.Users.map(cleanCognitoKeys))
       }
     })
   })
