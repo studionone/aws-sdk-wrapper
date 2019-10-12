@@ -27,6 +27,7 @@ cognito.getGroupUsers = (group) => {
   }
 
   return new Promise((resolve, reject) => {
+    // FIXME: This API method probably returns paginated results
     cog.listUsersInGroup(params, (error, data) => {
       if (error) {
         reject(error)
@@ -63,19 +64,31 @@ cognito.getUser = (id) => {
 
 /**
  * Get all users from the user pool
- * @return {promise}   - A promise that resolves to the user object with cleaned properties
+ * @param  {string} page - A pagination token for specifying a page of results
+ * @return {promise}     - A promise that resolves to the user object with cleaned properties
  */
-cognito.getAllUsers = () => {
+cognito.getAllUsers = (page = undefined) => {
   const params = {
     ...paramDefaults,
+    PaginationToken: page,
   }
 
   return new Promise((resolve, reject) => {
     cog.listUsers(params, (error, data) => {
       if (error) {
         reject(error)
+        return
+      }
+
+      const users = data.Users.map(cleanCognitoKeys)
+      if (data.PaginationToken) {
+        // Get next page of users, if available
+        cognito.getAllUsers(data.PaginationToken)
+          .then((next) => {
+            resolve([...users, ...next])
+          })
       } else {
-        resolve(data.Users.map(cleanCognitoKeys))
+        resolve(users)
       }
     })
   })
