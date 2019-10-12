@@ -6,12 +6,12 @@
 const helpers = {}
 
 /**
- * Format a Cognito user property key nicely to match GraphQL schema
+ * Format a Cognito user property key nicely in camel case
  * @param  {string} key - The key to format
  * @return {string}     - The formatted key
  */
 helpers.cleanKey = key => (
-  key
+  key.toLowerCase()
     .replace(/^sub$/, 'id')
     .replace(/(_\w)/g, match => match[1].toUpperCase())
     .replace('custom:', '')
