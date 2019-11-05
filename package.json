@@ -1,6 +1,6 @@
 {
   "name": "aws-sdk-wrapper",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "A wrapper for useful parts of the AWS JavaScript SDK",
   "main": "index.js",
   "scripts": {

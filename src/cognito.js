@@ -6,14 +6,17 @@ const { cleanCognitoKeys } = require('./helpers')
 const cog = new AWS.CognitoIdentityServiceProvider({ region: process.env.AWS_REGION })
 const errors = require('./errors')
 
-const paramDefaults = {
-  UserPoolId: process.env.COGNITO_USERPOOL_ID,
-}
-
 /**
  * @namespace cognito
  */
 const cognito = {}
+
+/**
+ * Default parameters for Cognito requests
+ */
+cognito.params = {
+  UserPoolId: process.env.COGNITO_USERPOOL_ID,
+}
 
 /**
  * Get all users from the specified user group
@@ -22,11 +25,12 @@ const cognito = {}
  */
 cognito.getGroupUsers = (group) => {
   const params = {
-    ...paramDefaults,
+    ...cognito.params,
     GroupName: group,
   }
 
   return new Promise((resolve, reject) => {
+    // FIXME: This API method probably returns paginated results
     cog.listUsersInGroup(params, (error, data) => {
       if (error) {
         reject(error)
@@ -44,7 +48,7 @@ cognito.getGroupUsers = (group) => {
  */
 cognito.getUser = (id) => {
   const params = {
-    ...paramDefaults,
+    ...cognito.params,
     Filter: `sub = "${id}"`,
   }
 
@@ -63,19 +67,31 @@ cognito.getUser = (id) => {
 
 /**
  * Get all users from the user pool
- * @return {promise}   - A promise that resolves to the user object with cleaned properties
+ * @param  {string} page - A pagination token for specifying a page of results
+ * @return {promise}     - A promise that resolves to the user object with cleaned properties
  */
-cognito.getAllUsers = () => {
+cognito.getAllUsers = (page = undefined) => {
   const params = {
-    ...paramDefaults,
+    ...cognito.params,
+    PaginationToken: page,
   }
 
   return new Promise((resolve, reject) => {
     cog.listUsers(params, (error, data) => {
       if (error) {
         reject(error)
+        return
+      }
+
+      const users = data.Users.map(cleanCognitoKeys)
+      if (data.PaginationToken) {
+        // Get next page of users, if available
+        cognito.getAllUsers(data.PaginationToken)
+          .then((next) => {
+            resolve([...users, ...next])
+          })
       } else {
-        resolve(data.Users.map(cleanCognitoKeys))
+        resolve(users)
       }
     })
   })
@@ -90,7 +106,7 @@ cognito.getUserGroups = id => (
   cognito.getUser(id)
     .then((user) => {
       const params = {
-        ...paramDefaults,
+        ...cognito.params,
         Username: user.username,
       }
 
@@ -118,7 +134,7 @@ cognito.updateUserAttributes = (id, attributes) => {
   return cognito.getUser(id)
     .then((user) => {
       const params = {
-        ...paramDefaults,
+        ...cognito.params,
         Username: user.username,
         UserAttributes: Object.entries(attributes)
           // Map attributes and replace null values with empty strings
