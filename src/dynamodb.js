@@ -131,6 +131,35 @@ dynamodb.query = (table, field, match) => {
 }
 
 /**
+ * Select items from a DynamoDB table by matching field value
+ * @param  {string} table - The name of the table to select from
+ * @param  {string} field - The name of the field to select by
+ * @param  {*}      expressionValues - The field values to match against
+ * @param  {string} filterExpressionValue = The field value for the filter expression
+ * @return {promise}      - A promise that resolves on completion
+ */
+dynamodb.queryMultiple = (table, field, expressionValues, filterExpressionValue) => {
+  const params = {
+    TableName: table,
+    IndexName: `${field}-index`,
+    KeyConditionExpression: `#${field} = :${field}`,
+    FilterExpression: filterExpressionValue,
+    ExpressionAttributeNames: { [`#${field}`]: field },
+    ExpressionAttributeValues: expressionValues,
+  }
+
+  return new Promise((resolve, reject) => {
+    db.query(params, (error, data) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(data)
+      }
+    })
+  })
+}
+
+/**
  * Select items from a DynamoDB table by matching field and optional range values
  * @param  {string} table - The name of the table to select from
  * @param  {string} field - The name of the field to select by
