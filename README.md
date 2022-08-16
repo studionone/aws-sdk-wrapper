@@ -1,5 +1,7 @@
 # AWS JavaScript SDK wrapper
 
+> This project is no longer maintained and should be considered deprecated. Please do not use it.
+
 This project contains wrappers for useful parts of the AWS SDK, which makes them easier to use in general projects.
 
 ## DynamoDB wrapper
